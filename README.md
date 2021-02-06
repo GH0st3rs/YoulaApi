@@ -12,7 +12,7 @@ youla = YoulaApi(device_id='25abf3444ef71337', token='a1a1a1a1a1a1a1a1a1a1a1a1a1
 # if you have only phone number
 import random, string
 def random_txt(count):
-    return return ''.join([random.choice(string.hexdigits[:-6]) for _ in range(count)])
+    return ''.join([random.choice(string.hexdigits[:-6]) for _ in range(count)])
 
 youla = YoulaApi(device_id=random_txt(16))
 youla.startPhoneConfirmation(phone='79999999999')
