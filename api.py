@@ -4,6 +4,7 @@ import time
 import logging
 import socket
 import json
+import logging
 from types import SimpleNamespace
 import urllib3
 urllib3.disable_warnings()
@@ -83,7 +84,11 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        if response.json().get('data').get('token'):
+            self.token = response.json().get('data').get('token')
+            self.header['X-Auth-Token'] = self.token
+        return response.json()
 
     def confirmPhone(self, phone, sms_code):
         data = {'phone': phone, 'code': sms_code}
@@ -94,7 +99,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def verifyConfirmPhone(self, session_id, phone):
         data = {'token': self.token, 'session_id': session_id, 'uid': self.device_id, 'phone': phone}
@@ -105,7 +111,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def postPhoneVerifyApprove(self, approve: bool, phone: str):
         data = {'phone': phone, 'approve': str(approve).lower()}
@@ -116,7 +123,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def authByLibVerify(self, session_id, phone):
         data = {'token': self.token, 'session_id': session_id, 'uid': self.device_id, 'phone': phone}
@@ -127,7 +135,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # BonusApi
     def getDailyBonuses(self):
@@ -137,7 +146,8 @@ class YoulaApi(HTTPClient):
             headers=self.header,
             params=self.params
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def getRewardedVideoBonuses(self):
         response = self.http_request(
@@ -146,7 +156,8 @@ class YoulaApi(HTTPClient):
             headers=self.header,
             params=self.params
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # PhoneConfirmationApi
     def startPhoneConfirmation(self, phone):
@@ -158,9 +169,13 @@ class YoulaApi(HTTPClient):
             # params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def startPhoneConfirmationWithVerify(self, phone):
+        '''
+        Change phone number
+        '''
         data = {'phone': phone, 'uid': 'null'}
         response = self.http_request(
             method="POST",
@@ -169,7 +184,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data)
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # ShortUrlApi
     def getFilter(self, link_id):
@@ -179,7 +195,8 @@ class YoulaApi(HTTPClient):
             headers=self.header,
             params=self.params
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # MiscApi
     def getMainBrand(self):
@@ -189,7 +206,8 @@ class YoulaApi(HTTPClient):
             headers=self.header,
             params=self.params
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # OAuthApi
     def getJwt(self, user_id):
@@ -204,7 +222,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data),
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def refreshJwt(self, refresh_token):
         data = OAuth.getFormBodyBuilder()
@@ -217,7 +236,8 @@ class YoulaApi(HTTPClient):
             params=self.params,
             data=json.dumps(data),
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     # UserApi
     def loadUser(self, user_id: str):
@@ -226,7 +246,8 @@ class YoulaApi(HTTPClient):
             path="user/{}".format(user_id),
             headers=self.header,
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
 
     def updateUser(self, user_id: str, body: dict):
         response = self.http_request(
@@ -235,7 +256,17 @@ class YoulaApi(HTTPClient):
             headers=self.header,
             data=json.dumps(body),
         )
-        print(response.json())
+        logging.debug(response.json())
+        return response.json()
+
+    # CountersApi
+    def getCounters(self, user_id: str) -> dict:
+        response = self.http_request(
+            method="GET",
+            path="counters/{}".format(user_id),
+            headers=self.header,
+        )
+        return response.json()
 
 
 def login_by_phone(self):
